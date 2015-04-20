@@ -150,7 +150,7 @@
                   <td>{{ loop.index }}</td>
                   <td class="text-center">
                       {% if move.product %}
-                        {{ move.product.code }}
+                        <strong>{{ move.product.code }}</strong>
                       {% else %}
                         -
                       {% endif %}
@@ -163,9 +163,9 @@
                       {% endif %}
                   </td>
                   <td class="text-right">
-                    {{ formatLang(move.quantity, production.company.party.lang, digits=move.unit_digits) }} {% if move.uom.symbol != 'u' %}{{ move.uom.symbol }}{% endif %}
+                    <strong>{{ formatLang(move.quantity, production.company.party.lang, digits=move.unit_digits) }} {% if move.uom.symbol != 'u' %}{{ move.uom.symbol }}{% endif %}</strong>
                   </td>
-                  <td class="text-center">{{ move.from_location.rec_name }}</td>
+                  <td class="text-center"><strong>{{ move.from_location.rec_name }}</strong></td>
                   <td class="text-center">{{ move.planned_date and move.planned_date|dateformat or '-' }}</td>
                   <td class="text-center">{{ move.effective_date and move.effective_date|dateformat or '-' }}</td>
                   <td class="text-capitalize text-right">{{ move.state }}</td>
@@ -197,7 +197,7 @@
                   <td>{{ loop.index }}</td>
                   <td class="text-center">
                       {% if move.product %}
-                        {{ move.product.code }}
+                        <strong>{{ move.product.code }}</strong>
                       {% else %}
                         -
                       {% endif %}
@@ -210,9 +210,9 @@
                       {% endif %}
                   </td>
                   <td class="text-right">
-                    {{ formatLang(move.quantity, production.company.party.lang, digits=move.unit_digits) }} {% if move.uom.symbol != 'u' %}{{ move.uom.symbol }}{% endif %}
+                    <strong>{{ formatLang(move.quantity, production.company.party.lang, digits=move.unit_digits) }} {% if move.uom.symbol != 'u' %}{{ move.uom.symbol }}{% endif %}</strong>
                   </td>
-                  <td class="text-center">{{ move.to_location.rec_name }}</td>
+                  <td class="text-center"><strong>{{ move.to_location.rec_name }}</strong></td>
                   <td class="text-center">{{ move.planned_date and move.planned_date|dateformat or '-' }}</td>
                   <td class="text-center">{{ move.effective_date and move.effective_date|dateformat or '-' }}</td>
                   <td class="text-capitalize text-right">{{ move.state }}</td>
