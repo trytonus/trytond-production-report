@@ -16,6 +16,7 @@ install-dependencies:
 	pip install -r dev_requirements.txt
 
 install-wkhtmltopdf:
+	sudo apt-get update
 	sudo apt-get install -y build-essential xorg libssl-dev libxrender-dev
 	wget http://wkhtmltopdf.googlecode.com/files/wkhtmltopdf-0.11.0_rc1-static-amd64.tar.bz2
 	tar xvjf wkhtmltopdf-0.11.0_rc1-static-amd64.tar.bz2
