@@ -140,6 +140,7 @@
                   <th class="text-center">Item</th>
                   <th>Description</th>
                   <th class="text-right">Quantity</th>
+                  <th class="text-right">Quantity Available</th>
                   <th class="text-center">From Location</th>
                   <th class="text-center">Planned Date</th>
                   <th class="text-center">Effective Date</th>
@@ -164,6 +165,9 @@
                   </td>
                   <td class="text-right">
                     <strong>{{ formatLang(move.quantity, production.company.party.lang, digits=move.unit_digits) }} {% if move.uom.symbol != 'u' %}{{ move.uom.symbol }}{% endif %}</strong>
+                  </td>
+                  <td class="text-right">
+                    <strong>{{ formatLang(move.quantity_available, production.company.party.lang, digits=move.unit_digits) }} {% if move.uom.symbol != 'u' %}{{ move.uom.symbol }}{% endif %}</strong>
                   </td>
                   <td class="text-center"><strong>{{ move.from_location.rec_name }}</strong></td>
                   <td class="text-center">{{ move.planned_date and move.planned_date|dateformat or '-' }}</td>
