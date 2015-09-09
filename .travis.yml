@@ -1,4 +1,5 @@
 language: python
+sudo: true
 python:
   - 2.7
 script: make test-$TEST_CMD
@@ -8,4 +9,4 @@ env:
   - TEST_CMD="flake8"
 notifications:
   email:
-  - ci-notify@openlabs.co.in
+  - ci-notify@fulfil.io

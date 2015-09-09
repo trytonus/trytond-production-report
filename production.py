@@ -1,10 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-    production.py
-
-    :copyright: (c) 2014-2015 by Openlabs Technologies & Consulting (P) Limited
-    :license: BSD, see LICENSE for more details.
-"""
 from dateutil.relativedelta import relativedelta
 from datetime import date
 from operator import attrgetter
