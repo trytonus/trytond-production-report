@@ -5,7 +5,7 @@
         <field name="name">Production Report</field>
         <field name="model">production</field>
         <field name="report_name">production.report</field>
-        <field name="report">production_report/production.html</field>
+        <field name="report">production_report/reports/production.html</field>
         <field name="extension">pdf</field>
     </record>
     <record model="ir.action.keyword" id="print_keyword">
