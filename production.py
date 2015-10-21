@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 from dateutil.relativedelta import relativedelta
-from datetime import date
+from datetime import date, datetime
 from operator import attrgetter
 from itertools import groupby, izip_longest
 from openlabs_report_webkit import ReportWebkit
 from sql.conditionals import Coalesce
+from babel.dates import format_datetime
+from pytz import utc
 
 from trytond.transaction import Transaction
 from trytond.pool import Pool, PoolMeta
@@ -34,17 +36,25 @@ class ReportMixin(ReportWebkit):
         """
         Company = Pool().get('company.company')
 
-        company = ''
+        company_name = ''
+        current_date = ''
         if Transaction().context.get('company'):
-            company = Company(Transaction().context.get('company')).party.name
+            company = Company(Transaction().context.get('company'))
+
+            current_date = format_datetime(
+                datetime.utcnow(), locale=Transaction().language,
+                tzinfo=company.timezone or utc, format='long'
+            )
+            company_name = company.party.name
         options = {
             'margin-bottom': '0.50in',
             'margin-left': '0.50in',
             'margin-right': '0.50in',
             'margin-top': '0.50in',
             'footer-font-size': '8',
-            'footer-left': company,
+            'footer-left': company_name,
             'footer-line': '',
+            'footer-center': current_date,
             'footer-right': '[page]/[toPage]',
             'footer-spacing': '5',
         }
