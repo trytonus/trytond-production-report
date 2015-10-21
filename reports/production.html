@@ -4,30 +4,13 @@
   Production Order
 {% endblock %}
 
-{% block scripts %}
-<script type="text/javascript" src="{{ 'production_report/reports/js/jquery-1.3.2.min.js'|modulepath }}"></script>
-<script type="text/javascript" src="{{ 'production_report/reports/js/jquery-barcode.min.js'|modulepath }}"></script>
-<script type="text/javascript">
-  $(document).ready(function(){
-    var code = $("#code").text();
-    var bom = $("#bom").text();
-    if (code != "N/A") {
-      $("#code").barcode(code, "code128", {barHeight:30});
-    }
-    if (bom != "N/A") {
-      $("#bom").barcode(bom, "code128", {barHeight:30});
-    }
-  });
-</script>
-{% endblock scripts %}
-
 {% block report_header scoped %}
   {% set production = record %}
   <span class="h3 pull-right">Production Order</span>
   <table class="table no-border">
     <tr>
       <td align="right"><b>Production #</b></td>
-      <td id="code">{{ production.code or 'N/A' }}</td>
+      <td class="barcode">{{ production.code or 'N/A' }}</td>
     </tr>
     <tr>
       <td align="right"><b>Production State:</b></td>
@@ -74,7 +57,7 @@
         {% endif %}
       </td>
       <td class="text-center">{{ production.cost|currencyformat(production.company.currency.code) }}</td>
-      <td class="text-center" id="bom" nowrap>{{ production.bom and production.bom.rec_name or 'N/A' }}</td>
+      <td class="text-center" nowrap>{{ production.bom and production.bom.rec_name or 'N/A' }}</td>
     </tr>
   </tbody>
 </table>
