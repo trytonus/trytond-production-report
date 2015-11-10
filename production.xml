@@ -17,9 +17,10 @@
     <record model="ir.action.report" id="report_production_schedule">
         <field name="name">Production Schedule</field>
         <field name="model">production</field>
-        <field name="template_extension">ods</field>
+        <field name="template_extension">odt</field>
         <field name="report_name">report.production.schedule</field>
-        <field name="report">production_report/reports/production_schedule.ods</field>
+        <field name="report">production_report/reports/production_schedule.html</field>
+        <field name="extension">pdf</field>
     </record>
     <record model="ir.ui.view" id="report_production_schedule_view_form">
         <field name="model">report.production.schedule.wizard.start</field>

@@ -70,7 +70,7 @@ class ProductionReport(ReportMixin):
     __name__ = 'production.report'
 
 
-class ProductionScheduleReport(Report):
+class ProductionScheduleReport(ReportWebkit):
     """
     Production Schedule Report
     """
