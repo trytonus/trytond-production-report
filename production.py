@@ -2,7 +2,7 @@
 from dateutil.relativedelta import relativedelta
 from datetime import date, datetime
 from operator import attrgetter
-from itertools import groupby, izip_longest
+from itertools import groupby
 from openlabs_report_webkit import ReportWebkit
 from sql.conditionals import Coalesce
 from babel.dates import format_datetime
@@ -12,7 +12,6 @@ from trytond.transaction import Transaction
 from trytond.pool import Pool, PoolMeta
 from trytond.model import ModelView, fields
 from trytond.wizard import Wizard, StateAction, StateView, Button
-from trytond.report import Report
 from trytond.exceptions import UserError
 
 
@@ -70,7 +69,7 @@ class ProductionReport(ReportMixin):
     __name__ = 'production.report'
 
 
-class ProductionScheduleReport(Report):
+class ProductionScheduleReport(ReportMixin):
     """
     Production Schedule Report
     """
@@ -103,13 +102,10 @@ class ProductionScheduleReport(Report):
         for reporting_date, prod_on_date in groupby(productions, key=key):
             matrix.append([reporting_date] + list(prod_on_date))
 
-        # Transpose the array
-        productions_by_date = list(izip_longest(*matrix))
-
         localcontext.update({
-            'productions_by_date': productions_by_date[1:],
-            'dates': productions_by_date[0]
+            'productions_by_date': matrix
         })
+
         return super(ProductionScheduleReport, cls).parse(
             report, records, data, localcontext
         )
