@@ -99,13 +99,15 @@ class ProductionScheduleReport(ReportMixin):
             )
 
         matrix = []
-        for reporting_date, prod_on_date in groupby(productions, key=key):
-            matrix.append([reporting_date] + list(prod_on_date))
+        for reporting_date, prod_on_date in groupby(
+                sorted(productions, key=key), key=key):
+            matrix.append((reporting_date, list(prod_on_date)))
 
         localcontext.update({
             'productions_by_date': matrix
         })
 
+        records = [1]       # Clear productions
         return super(ProductionScheduleReport, cls).parse(
             report, records, data, localcontext
         )
