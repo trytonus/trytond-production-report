@@ -4,18 +4,25 @@
   Production Schedule
 {% endblock %}
 
-{% block body %}
-{% for date, production in productions_by_date %}
+{% block report_header scoped %}
+  <span class="h3 pull-right">Production Schedule</span>
+{% endblock report_header %}
 
-<span class="h2 pull-left">{{ date|dateformat }}</span>
-<table class="table">
-  <thead>
-    <th class="text-center">Link</th>
-    <th class="text-center">Name</th>
-    <th class="text-center">Unit</th>
-    <th class="text-center">Operator</th>
-  </thead>
+{% block report_body %}
+{% for date, productions in productions_by_date %}
+<table class="table table-bordered">
   <tbody>
+    <tr>
+      <th colspan="5">{{ date|dateformat('full') }}</th>
+    </tr>
+    <tr>
+      <th class="text-center">Code</th>
+      <th class="text-center">Zone</th>
+      <th class="text-center">Product</th>
+      <th class="text-center">Quantity</th>
+      <th class="text-center">Operator</th>
+    </tr>
+    {% for production in productions %}
     <tr>
       <td class="text-center">
         {% if production.code %}
@@ -23,6 +30,9 @@
         {% else %}
           N/A
         {% endif %}
+      </td>
+      <td>
+        {{ production.location.rec_name }}
       </td>
       <td class="text-center">
         {% if production.product %}
@@ -44,7 +54,8 @@
         {{ production.operator and production.operator.rec_name or 'N/A' }}
       </td>
     </tr>
+    {% endfor %}
   </tbody>
 </table>
 {% endfor %}
-{% endblock body %}
+{% endblock report_body %}
