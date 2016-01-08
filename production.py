@@ -7,6 +7,7 @@ from openlabs_report_webkit import ReportWebkit
 from sql.conditionals import Coalesce
 from babel.dates import format_datetime
 from pytz import utc
+import json
 
 from trytond.transaction import Transaction
 from trytond.pool import Pool, PoolMeta
@@ -19,7 +20,7 @@ __metaclass__ = PoolMeta
 __all__ = [
     'ProductionReport', 'ProductionScheduleReport',
     'ProductionScheduleReportWizardStart', 'ProductionScheduleReportWizard',
-    'Production'
+    'Production', 'BOMTreeReport'
 ]
 
 
@@ -67,6 +68,34 @@ class ProductionReport(ReportMixin):
     Production Report
     """
     __name__ = 'production.report'
+
+
+class BOMTreeReport(ReportMixin):
+    """
+    BOM Tree Report
+    """
+    __name__ = 'production.bom.tree.report'
+
+    @classmethod
+    def get_tree(cls, bom):
+        d = {
+            'name': bom.name,
+            'children': [],
+            'quantity': 1,
+            'url': bom.__url__,
+        }
+        for input_ in bom.inputs:
+            if input_.product.boms:
+                child = cls.get_tree(input_.product.boms[0].bom)
+                child['quantity'] = input_.quantity
+                d['children'].append(child)
+        return d
+
+    @classmethod
+    def parse(cls, report, records, data, localcontext):
+        localcontext['get_tree'] = cls.get_tree
+        localcontext['json'] = json
+        return super(BOMTreeReport, cls).parse(report, records, data, localcontext)
 
 
 class ProductionScheduleReport(ReportMixin):
