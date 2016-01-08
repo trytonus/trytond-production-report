@@ -83,12 +83,19 @@ class BOMTreeReport(ReportMixin):
             'children': [],
             'quantity': 1,
             'url': bom.__url__,
+            'type': bom.__name__,
         }
         for input_ in bom.inputs:
             if input_.product.boms:
                 child = cls.get_tree(input_.product.boms[0].bom)
-                child['quantity'] = input_.quantity
-                d['children'].append(child)
+            else:
+                child = {
+                    'name': input_.product.code,
+                    'url': input_.product.__url__,
+                    'type': input_.product.__name__,
+                }
+            child['quantity'] = input_.quantity
+            d['children'].append(child)
         return d
 
     @classmethod
