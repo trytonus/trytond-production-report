@@ -2,12 +2,13 @@
 from trytond.pool import Pool
 from production import ProductionReport, ProductionScheduleReport, \
     ProductionScheduleReportWizardStart, ProductionScheduleReportWizard, \
-    Production
+    Production, BOMTreeReport
 
 
 def register():
     Pool.register(
         ProductionReport,
+        BOMTreeReport,
         ProductionScheduleReport,
         module='production_report', type_='report'
     )
