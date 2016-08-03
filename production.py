@@ -103,7 +103,9 @@ class BOMTreeReport(ReportMixin):
     def parse(cls, report, records, data, localcontext):
         localcontext['get_tree'] = cls.get_tree
         localcontext['json'] = json
-        return super(BOMTreeReport, cls).parse(report, records, data, localcontext)
+        return super(BOMTreeReport, cls).parse(
+            report, records, data, localcontext
+        )
 
 
 class ProductionScheduleReport(ReportMixin):
