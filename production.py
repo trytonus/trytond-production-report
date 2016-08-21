@@ -39,8 +39,9 @@ class ReportMixin(ReportWebkit):
         company_name = ''
         current_date = ''
         if Transaction().context.get('company'):
-            company = Company(Transaction().context.get('company'))
-
+            company = Company(
+                Transaction().context.get('company')
+            )
             current_date = format_datetime(
                 datetime.utcnow(), locale=Transaction().language,
                 tzinfo=company.timezone or utc, format='long'
@@ -115,7 +116,7 @@ class ProductionScheduleReport(ReportMixin):
     __name__ = 'report.production.schedule'
 
     @classmethod
-    def parse(cls, report, records, data, localcontext):
+    def get_context(cls, records, data):
         """
         Data must always contain a key 'productions' if records is None
         """
@@ -142,14 +143,16 @@ class ProductionScheduleReport(ReportMixin):
                 sorted(productions, key=key), key=key):
             matrix.append((reporting_date, list(prod_on_date)))
 
-        localcontext.update({
+        report_context = super(ProductionScheduleReport, cls).get_context(
+            records, data
+        )
+
+        report_context.update({
             'productions_by_date': matrix
         })
 
         records = [1]       # Clear productions
-        return super(ProductionScheduleReport, cls).parse(
-            report, records, data, localcontext
-        )
+        return report_context
 
 
 class ProductionScheduleReportWizardStart(ModelView):
