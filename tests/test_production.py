@@ -4,16 +4,18 @@ from datetime import date
 from decimal import Decimal
 
 import trytond.tests.test_tryton
-from trytond.tests.test_tryton import POOL, USER, DB_NAME, CONTEXT
+from trytond.tests.test_tryton import POOL, USER, ModuleTestCase, \
+    with_transaction
 from trytond.transaction import Transaction
 from trytond.pyson import Eval
 from trytond.pool import Pool
 
 
-class TestProduction(unittest.TestCase):
+class TestProduction(ModuleTestCase):
     """
     Tests for Production Report module
     """
+    module = 'production_report'
 
     def setUp(self):
         """
@@ -63,7 +65,9 @@ class TestProduction(unittest.TestCase):
             'main_company': self.company,
         })
 
-        CONTEXT.update(self.User.get_preferences(context_only=True))
+        Transaction().context.update(
+            self.User.get_preferences(context_only=True)
+        )
 
         self.uom, = self.Uom.search([('symbol', '=', 'u')])
 
@@ -99,7 +103,7 @@ class TestProduction(unittest.TestCase):
             'type': 'goods',
             'list_price': Decimal('2000'),
             'cost_price': Decimal('1500'),
-            'category': self.product_category.id,
+            'categories': [('add', [self.product_category.id])],
             'default_uom': self.uom,
         }])
 
@@ -112,6 +116,7 @@ class TestProduction(unittest.TestCase):
             ('code', '=', 'WH')
         ])
 
+    @with_transaction()
     def test_0010_test_production_report(self):
         """
         Test production report execution
@@ -119,43 +124,43 @@ class TestProduction(unittest.TestCase):
         ActionReport = POOL.get('ir.action.report')
         Report = POOL.get('production.report', type="report")
 
-        with Transaction().start(DB_NAME, USER, context=CONTEXT):
-            self.setup_defaults()
+        self.setup_defaults()
 
-            report_action, = ActionReport.search([
-                ('report_name', '=', 'production.report'),
-                ('name', '=', 'Production Report')
-            ])
-            report_action.extension = 'pdf'
-            report_action.save()
+        report_action, = ActionReport.search([
+            ('report_name', '=', 'production.report'),
+            ('name', '=', 'Production Report')
+        ])
+        report_action.extension = 'pdf'
+        report_action.save()
 
-            with Transaction().set_context(company=self.company.id):
-                production, = self.Production.create([{
-                    'planned_date': date.today(),
-                    'product': self.product.id,
-                    'uom': self.uom.id,
-                    'quantity': 20,
-                    'warehouse': self.warehouse.id,
-                    'location': self.warehouse.production_location.id,
-                }])
+        with Transaction().set_context(company=self.company.id):
+            production, = self.Production.create([{
+                'planned_date': date.today(),
+                'product': self.product.id,
+                'uom': self.uom.id,
+                'quantity': 20,
+                'warehouse': self.warehouse.id,
+                'location': self.warehouse.production_location.id,
+            }])
 
-                # Set Pool.test as False as we need the report to be generated
-                # as PDF
-                # This is specifically to cover the PDF coversion code
-                Pool.test = False
+            # Set Pool.test as False as we need the report to be generated
+            # as PDF
+            # This is specifically to cover the PDF coversion code
+            Pool.test = False
 
-                # Generate Production report
-                val = Report.execute([production.id], {})
+            # Generate Production report
+            val = Report.execute([production.id], {})
 
-                # Revert Pool.test back to True for other tests to run normally
-                Pool.test = True
+            # Revert Pool.test back to True for other tests to run normally
+            Pool.test = True
 
-                self.assert_(val)
-                # Assert report type
-                self.assertEqual(val[0], 'pdf')
-                # Assert report name
-                self.assertEqual(val[3], 'Production Report')
+            self.assert_(val)
+            # Assert report type
+            self.assertEqual(val[0], 'pdf')
+            # Assert report name
+            self.assertEqual(val[3], 'Production Report')
 
+    @with_transaction()
     def test_0020_test_productions_report_wizard(self):
         """
         Test the productions report wizard
@@ -163,83 +168,82 @@ class TestProduction(unittest.TestCase):
         ReportWizard = POOL.get(
             'report.production.schedule.wizard', type="wizard")
 
-        with Transaction().start(DB_NAME, USER, context=CONTEXT):
-            self.setup_defaults()
+        self.setup_defaults()
 
-            with Transaction().set_context({'company': self.company.id}):
-                production, = self.Production.create([{
-                    'planned_date': date.today(),
-                    'product': self.product.id,
-                    'uom': self.uom.id,
-                    'quantity': 20,
-                    'warehouse': self.warehouse.id,
-                    'location': self.warehouse.production_location.id,
-                }])
-                session_id, start_state, end_state = ReportWizard.create()
-                result = ReportWizard.execute(session_id, {}, start_state)
-                self.assertEqual(result.keys(), ['view'])
-                self.assertEqual(result['view']['buttons'], [
-                    {
-                        'state': 'end',
-                        'states': '{}',
-                        'icon': 'tryton-cancel',
-                        'default': False,
-                        'string': 'Cancel',
-                    }, {
-                        'state': 'generate',
-                        'states': '{}',
-                        'icon': 'tryton-ok',
-                        'default': True,
-                        'string': 'Generate',
-                    }
-                ])
-                data = {
-                    start_state: {
-                        'start_date': date.today(),
-                        'end_date': date.today(),
-                    },
+        with Transaction().set_context({'company': self.company.id}):
+            production, = self.Production.create([{
+                'planned_date': date.today(),
+                'product': self.product.id,
+                'uom': self.uom.id,
+                'quantity': 20,
+                'warehouse': self.warehouse.id,
+                'location': self.warehouse.production_location.id,
+            }])
+            session_id, start_state, end_state = ReportWizard.create()
+            result = ReportWizard.execute(session_id, {}, start_state)
+            self.assertEqual(result.keys(), ['view'])
+            self.assertEqual(result['view']['buttons'], [
+                {
+                    'state': 'end',
+                    'states': '{}',
+                    'icon': 'tryton-cancel',
+                    'default': False,
+                    'string': 'Cancel',
+                }, {
+                    'state': 'generate',
+                    'states': '{}',
+                    'icon': 'tryton-ok',
+                    'default': True,
+                    'string': 'Generate',
                 }
-                result = ReportWizard.execute(
-                    session_id, data, 'generate'
-                )
-                self.assertEqual(len(result['actions']), 1)
+            ])
+            data = {
+                start_state: {
+                    'start_date': date.today(),
+                    'end_date': date.today(),
+                },
+            }
+            result = ReportWizard.execute(
+                session_id, data, 'generate'
+            )
+            self.assertEqual(len(result['actions']), 1)
 
-                report_name = result['actions'][0][0]['report_name']
-                report_data = result['actions'][0][1]
+            report_name = result['actions'][0][0]['report_name']
+            report_data = result['actions'][0][1]
 
-                ProductionsReport = POOL.get(report_name, type="report")
+            ProductionsReport = POOL.get(report_name, type="report")
 
-                val = ProductionsReport.execute([], report_data)
+            val = ProductionsReport.execute([], report_data)
 
-                self.assert_(val)
-                # Assert report name
-                self.assertEqual(val[3], 'Production Schedule')
+            self.assert_(val)
+            # Assert report name
+            self.assertEqual(val[3], 'Production Schedule')
 
+    @with_transaction()
     def test_0030_test_productions_report(self):
         """
         Test productions report execution
         """
         Report = POOL.get('report.production.schedule', type="report")
 
-        with Transaction().start(DB_NAME, USER, context=CONTEXT):
-            self.setup_defaults()
+        self.setup_defaults()
 
-            with Transaction().set_context(company=self.company.id):
-                production, = self.Production.create([{
-                    'planned_date': date.today(),
-                    'product': self.product.id,
-                    'uom': self.uom.id,
-                    'quantity': 20,
-                    'warehouse': self.warehouse.id,
-                    'location': self.warehouse.production_location.id,
-                }])
+        with Transaction().set_context(company=self.company.id):
+            production, = self.Production.create([{
+                'planned_date': date.today(),
+                'product': self.product.id,
+                'uom': self.uom.id,
+                'quantity': 20,
+                'warehouse': self.warehouse.id,
+                'location': self.warehouse.production_location.id,
+            }])
 
-                # Generate Production report
-                val = Report.execute([production.id], {})
+            # Generate Production report
+            val = Report.execute([production.id], {})
 
-                self.assert_(val)
-                # Assert report name
-                self.assertEqual(val[3], 'Production Schedule')
+            self.assert_(val)
+            # Assert report name
+            self.assertEqual(val[3], 'Production Schedule')
 
 
 def suite():
