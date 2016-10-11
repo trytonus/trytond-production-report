@@ -92,7 +92,7 @@ class BOMTreeReport(ReportMixin):
                 child = cls.get_tree(input_.product.boms[0].bom)
             else:
                 child = {
-                    'name': input_.product.code,
+                    'name': input_.product.rec_name,
                     'url': input_.product.__url__,
                     'type': input_.product.__name__,
                 }
