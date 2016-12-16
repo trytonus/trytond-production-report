@@ -6,11 +6,11 @@
 
 {% block report_header scoped %}
   {% set production = record %}
-    <span class="h3 pull-right">Production Order #{{production.code}}</span>
+    <span class="h3 pull-right">Production Order #{{production.number}}</span>
   <table class="table no-border">
     <tr>
       <td align="right"><b>Production #</b></td>
-      <td class="barcode">{{ production.code or 'N/A' }}</td>
+      <td class="barcode">{{ production.number or 'N/A' }}</td>
     </tr>
     <tr>
       <td align="right"><b>Production State:</b></td>
